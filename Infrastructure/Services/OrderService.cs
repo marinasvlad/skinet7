@@ -40,19 +40,29 @@ public class OrderService : IOrderService
 
         var subtotal = items.Sum(item => item.Price * item.Quantity);
 
+
+        var spec = new OrdersWithItemsAndOrderingSpecification(basket.PaymentIntentId);
+        var order = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+
+        if(order != null)
+        {
+            order.ShipToAddress = shippingAddress;
+            order.DeliveryMethod = deliveryMethod;
+            order.Subtotal = subtotal;
+            _unitOfWork.Repository<Order>().Update(order);
+        }
+        else
+        {
         //create order
 
-        var order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subtotal);
-        // TO DO save it to db
+        order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subtotal, basket.PaymentIntentId);
 
         _unitOfWork.Repository<Order>().Add(order);
+        }
+
         var result = await _unitOfWork.Complete();
 
         if(result <= 0) return null;
-
-        //delete basket
-
-        await _basketReop.DeleteBasketAsync(basketId);
 
         //return order
         return order;

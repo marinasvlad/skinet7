@@ -22,7 +22,7 @@ public static class ApplicationServicesExtensions
             var options = ConfigurationOptions.Parse(conf.GetConnectionString("redis"));
             return ConnectionMultiplexer.Connect(options);
         });
-
+        services.AddSingleton<IResponseCacheService, ResponseCacheServices>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IBasketRepository, BasketRepository>();        

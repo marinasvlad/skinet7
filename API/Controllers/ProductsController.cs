@@ -27,7 +27,7 @@ public class ProductsController : BaseApiController
         _mapper = mapper;
     }
 
-    [Cached(600)]
+    [Cached(15)]
     [HttpGet]
     public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
     {
@@ -42,10 +42,15 @@ public class ProductsController : BaseApiController
         var data = _mapper.Map<IReadOnlyList<Product>, 
         IReadOnlyList<ProductToReturnDto>>(products);
 
+        foreach(var product in products)
+        {
+            Console.WriteLine(product.PictureUrl);
+        }
+
         return Ok(new Pagination<ProductToReturnDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
     }
 
-    [Cached(600)]
+    [Cached(15)]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
@@ -59,14 +64,14 @@ public class ProductsController : BaseApiController
         return _mapper.Map<Product, ProductToReturnDto>(product);
     }
     
-    [Cached(600)]
+    [Cached(15)]
     [HttpGet("brands")]
     public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
     {
         return Ok(await _productBrandRepo.ListAllAsync());
     }
 
-    [Cached(600)]
+    [Cached(15)]
     [HttpGet("types")]
     public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
     {

@@ -16,10 +16,10 @@ public static class ApplicationServicesExtensions
 
         services.AddDbContext<StoreContext>(opt =>
         {
-            opt.UseSqlite(conf.GetConnectionString("DefaultConnection"));
+            opt.UseMySql(conf.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect(conf.GetConnectionString("DefaultConnection")));
         });
         services.AddSingleton<IConnectionMultiplexer>(c => {
-            var options = ConfigurationOptions.Parse(conf.GetConnectionString("redis"));
+            var options = ConfigurationOptions.Parse(conf.GetConnectionString("Redis"));
             return ConnectionMultiplexer.Connect(options);
         });
         services.AddSingleton<IResponseCacheService, ResponseCacheServices>();

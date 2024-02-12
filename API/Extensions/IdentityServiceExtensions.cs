@@ -12,7 +12,7 @@ public static class IdentityServiceExtensions
 {
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config){
         services.AddDbContext<AppIdentityDbContext>(opt => {
-            opt.UseSqlite(config.GetConnectionString("IdentityConnection"));
+            opt.UseMySql(config.GetConnectionString("IdentityConnection"), ServerVersion.AutoDetect(config.GetConnectionString("IdentityConnection")));
         });
 
         services.AddIdentityCore<AppUser>(opt => {
